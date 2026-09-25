@@ -27,3 +27,4 @@ class Commitment(Base):
 
     organisation = relationship("Organisation", back_populates="commitments")
     opportunity = relationship("Opportunity", back_populates="commitments")
+    responsible = relationship("User", foreign_keys=[responsible_id])

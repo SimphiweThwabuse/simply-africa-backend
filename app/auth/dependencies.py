@@ -5,8 +5,9 @@ from app.database import get_db
 from app.models.user import User
 from app.auth.security import decode_access_token
 
-# tokenUrl is just for the /docs "Authorize" button - actual login is POST /api/auth/login
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+# tokenUrl is just for the /docs "Authorize" button
+# Actual login is POST /api/auth/login
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/swagger-login")
 
 
 def get_current_user(
@@ -20,11 +21,29 @@ def get_current_user(
     )
 
     email = decode_access_token(token)
+
     if email is None:
         raise credentials_error
 
     user = db.query(User).filter(User.email == email).first()
+
     if user is None or not user.is_active:
         raise credentials_error
 
     return user
+
+
+def get_current_admin(
+    current_user: User = Depends(get_current_user),
+) -> User:
+    """
+    Allows access only to users with the admin role.
+    """
+
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
+
+    return current_user

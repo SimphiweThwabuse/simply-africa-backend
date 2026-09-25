@@ -4,7 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.database import get_db, init_db
-from app.routers import organisations, dashboard, auth, contacts, engagements, opportunities, reports, commitments
+from app.routers import organisations, dashboard, auth, contacts, engagements, opportunities, reports, commitments, users
 
 app = FastAPI(title="Partner & Sponsor CRM API")
 
@@ -16,7 +16,7 @@ def startup_event():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://simplycomplexafrica.netlify.app"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,7 +32,7 @@ app.include_router(engagements.router, prefix="/api")
 app.include_router(opportunities.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
 app.include_router(commitments.router, prefix="/api")
-
+app.include_router(users.router, prefix="/api")
 
 @app.get("/api/health")
 def health():
